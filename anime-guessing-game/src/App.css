@@ -1,0 +1,68 @@
+/* App.css */
+.App {
+    text-align: center;
+    padding: 20px;
+    min-height: 100vh;
+    color: white; /* Ensure text is readable */
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .background-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: 50% 100%, 50% 100%;
+    background-position: right, left;
+    background-repeat: no-repeat;
+    transition: opacity 0.5s ease-in-out;
+    z-index: -1;
+  }
+  
+  .background-layer.fade-in {
+    opacity: 1;
+  }
+  
+  .background-layer.fade-out {
+    opacity: 0;
+  }
+  
+  .anime-container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+  }
+  
+  .anime-card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 200px;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background for cards */
+  }
+  
+  .anime-card img {
+    width: 100%;
+    height: auto;
+  }
+  
+  .score-display {
+    margin-bottom: 20px;
+  }
+  
+  .result-modal {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background for modal */
+    color: white;
+  }
+  
+  .result-modal.correct {
+    border: 2px solid lightgreen;
+  }
+  
+  .result-modal.wrong {
+    border: 2px solid lightcoral;
+  }
