@@ -21,7 +21,7 @@ const App = () => {
         response = await axios.get(`${JIKAN_API_URL}/random/anime`);
         animeScore = response.data.data.score;
         animePopularity = response.data.data.popularity;
-      } while (animePopularity > 5000 || animeScore == null);
+      } while (animePopularity > 5000);
 
       return response.data.data;
     } catch (error) {
