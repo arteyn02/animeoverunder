@@ -10,6 +10,39 @@
     background-image: none;
   }
   
+  .end-screen {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgb(214, 104, 53);
+    padding: 40px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  .end-screen h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .end-screen button {
+    padding: 12px 24px;
+    font-size: 18px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+  }
+  
+  .end-screen button:hover {
+    background-color: #0056b3;
+  }
+  
+
   .background-layer {
     position: absolute;
     top: 0;
@@ -21,6 +54,32 @@
     background-repeat: no-repeat;
     transition: opacity 0.5s ease-in-out;
     z-index: -1;
+  }
+  
+  .controls {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .controls button {
+    padding: 15px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .controls button:hover {
+    background-color: #0056b3;
   }
   
   .background-layer.fade-in {

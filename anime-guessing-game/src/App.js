@@ -4,6 +4,7 @@ import AnimeCard from './Components/AnimeCard';
 import ScoreDisplay from './Components/ScoreDisplay';
 import ResultModal from './Components/ResultModal';
 import './App.css';
+import EndScreen from './Components/EndScreen';
 
 const JIKAN_API_URL = 'https://api.jikan.moe/v4';
 
@@ -13,11 +14,22 @@ const App = () => {
   const [score, setScore] = useState(0);
   const [result, setResult] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
+
 
   // Start the game
   const startGame = () => {
     setIsPlaying(true);
   };
+
+  const restartGame = async () => {
+    setScore(0);
+    setGameOver(false);
+    setResult(null);
+    setAnimeQueue([]); 
+    setAnimeQueue((prevQueue) => prevQueue.slice(2));
+    setCurrentAnime(animeQueue[0]); 
+  };  
 
   // Fetch a random anime
   const fetchRandomAnime = async () => {
@@ -46,9 +58,10 @@ const App = () => {
     const preloadedQueue = [];
     for (let i = 0; i < 10; i++) {
       const anime = await fetchRandomAnime();
-      if (anime) {
+      if (anime && !(preloadedQueue.includes(anime))) {
         console.log('valid anime found for preload:', anime.title);
         preloadedQueue.push(anime);
+        console.log('queue length: ', preloadedQueue.length);
       }
     }
     setAnimeQueue(preloadedQueue);
@@ -66,7 +79,7 @@ const App = () => {
   const startNewRound = async (passedAnime) => {
     if (animeQueue.length > 2) {
       setResult(null); // Clear result
-      //setCurrentAnime(passedAnime); // Set the passed anime as current
+      setCurrentAnime(passedAnime); // Set the passed anime as current
       setAnimeQueue((prevQueue) => prevQueue.slice(1)); // Remove first pair and move to the next
 
       // Fetch a new anime pair to replenish the queue
@@ -76,15 +89,26 @@ const App = () => {
   };
 
   // Handle user guess
-  const handleGuess = (selectedAnime, otherAnime) => {
-    if (selectedAnime.score > otherAnime.score) {
-      setScore((prevScore) => prevScore + 1);
-      setResult('correct');
-      setTimeout(() => startNewRound(selectedAnime), 3000);
+  const handleGuess = (guess) => {
+    if ( guess === 'higher') {
+      if (currentAnime.score < animeQueue[0].score) {
+        setResult('correct');
+        setScore((prevScore) => prevScore + 1);
+      } else {
+        setResult('incorrect');
+        setTimeout(() => {setGameOver(true);}, 3000); // Delay before ending
+      }
     } else {
-      setResult('wrong');
-      setTimeout(() => startNewRound(otherAnime), 3000);
+      if (currentAnime.score > animeQueue[0].score) {
+        setResult('correct');
+        setScore((prevScore) => prevScore + 1);
+      } else {
+        setResult('incorrect');
+        setTimeout(() => {setGameOver(true);}, 3000);
+      }
     }
+
+    setTimeout(() => {startNewRound(animeQueue[0]);}, 3000); // Delay before starting new round 
   };
 
   // Load initial anime pairs when component mounts
@@ -111,6 +135,8 @@ const App = () => {
           <h1>Welcome to the Anime Rating Game</h1>
           <button onClick={startGame}>Play</button>
         </div>
+      ) : gameOver ? ( 
+        <EndScreen score={score} onRestart={restartGame} />
       ) : (
         <>
           <h1>Anime Rating Guessing Game</h1>
@@ -118,11 +144,17 @@ const App = () => {
           <div className="anime-container">
             {currentAnime && animeQueue.length > 0 && (
               <>
-                <AnimeCard anime={currentAnime} onSelect={() => handleGuess(currentAnime, animeQueue[0])} />
-                <AnimeCard anime={animeQueue[0]} onSelect={() => handleGuess(animeQueue[0], currentAnime)} />
+                <AnimeCard anime={currentAnime} />
+                <AnimeCard anime={animeQueue[0]} />
               </>
             )}
+
+            <div className="controls">
+            <button onClick={() => handleGuess('higher')}>Higher</button>
+            <button onClick={() => handleGuess('lower')}>Lower</button>
+            </div>
           </div>
+          
           {result && <ResultModal result={result} />}
         </>
       )}
