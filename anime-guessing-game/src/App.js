@@ -12,16 +12,27 @@ const App = () => {
   const [currentAnime, setCurrentAnime] = useState(null);
   const [score, setScore] = useState(0);
   const [result, setResult] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  // Start the game
+  const startGame = () => {
+    setIsPlaying(true);
+  };
 
   // Fetch a random anime
   const fetchRandomAnime = async () => {
     try {
-      let response, animeScore, animePopularity;
+      let response, animeScore, animePopularity, animeType;
       do {
+        console.log('fetching random anime...');
+
         response = await axios.get(`${JIKAN_API_URL}/random/anime`);
         animeScore = response.data.data.score;
         animePopularity = response.data.data.popularity;
-      } while (animePopularity > 5000);
+        animeType = response.data.data.type;
+
+        console.log('fetched anime:', response.data.data.title);
+      } while (!(animePopularity <= 5000 && (animeType === 'TV' || animeType === 'Movie' || animeType === 'ONA') && animeScore != null));
 
       return response.data.data;
     } catch (error) {
@@ -36,6 +47,7 @@ const App = () => {
     for (let i = 0; i < 10; i++) {
       const anime = await fetchRandomAnime();
       if (anime) {
+        console.log('valid anime found for preload:', anime.title);
         preloadedQueue.push(anime);
       }
     }
@@ -54,7 +66,7 @@ const App = () => {
   const startNewRound = async (passedAnime) => {
     if (animeQueue.length > 2) {
       setResult(null); // Clear result
-      setCurrentAnime(passedAnime)
+      //setCurrentAnime(passedAnime); // Set the passed anime as current
       setAnimeQueue((prevQueue) => prevQueue.slice(1)); // Remove first pair and move to the next
 
       // Fetch a new anime pair to replenish the queue
@@ -94,17 +106,26 @@ const App = () => {
 
   return (
     <div className="App">
-      <h1>Anime Rating Guessing Game</h1>
-      <ScoreDisplay score={score} />
-      <div className="anime-container">
-        {currentAnime && animeQueue.length > 0 && (
-          <>
-            <AnimeCard anime={currentAnime} onSelect={() => handleGuess(currentAnime, animeQueue[0])} />
-            <AnimeCard anime={animeQueue[0]} onSelect={() => handleGuess(animeQueue[0], currentAnime)} />
-          </>
-        )}
-      </div>
-      {result && <ResultModal result={result} />}
+      {!isPlaying ? (
+        <div className="homepage">
+          <h1>Welcome to the Anime Rating Game</h1>
+          <button onClick={startGame}>Play</button>
+        </div>
+      ) : (
+        <>
+          <h1>Anime Rating Guessing Game</h1>
+          <ScoreDisplay score={score} />
+          <div className="anime-container">
+            {currentAnime && animeQueue.length > 0 && (
+              <>
+                <AnimeCard anime={currentAnime} onSelect={() => handleGuess(currentAnime, animeQueue[0])} />
+                <AnimeCard anime={animeQueue[0]} onSelect={() => handleGuess(animeQueue[0], currentAnime)} />
+              </>
+            )}
+          </div>
+          {result && <ResultModal result={result} />}
+        </>
+      )}
     </div>
   );
 };

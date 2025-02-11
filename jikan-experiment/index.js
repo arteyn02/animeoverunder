@@ -34,7 +34,8 @@ async function fetchRandomAnime() {
             animeTitle = response.data.data.title;
             animeScore = response.data.data.score;
             animePopularity = response.data.data.popularity;
-        } while ( animePopularity > 5000 || animeScore == null);
+            animeType = response.data.data.type;
+        } while (animePopularity <= 5000 && (animeType === 'TV' || animeType === 'Movie' || animeType === 'ONA'));
     } catch {
 
         console.error('Error fetching random anime');
@@ -61,9 +62,9 @@ async function searchAnime(query) {
 // Main function to test the API
 async function main() {
   // Fetch anime by ID (e.g., Cowboy Bebop has ID 1)
-//   const animeId = 56701;
-//   const animeDetails = await fetchAnimeById(animeId);
-//   console.log('Anime Details:', animeDetails);
+  const animeId = 5667;
+  const animeDetails = await fetchAnimeById(animeId);
+  console.log('Anime Details:', animeDetails);
 
 fetchRandomAnime();
 
